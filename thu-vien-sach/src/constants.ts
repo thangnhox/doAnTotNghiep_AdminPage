@@ -1,0 +1,3 @@
+const AppConstants = {
+    token: 'token'
+}
