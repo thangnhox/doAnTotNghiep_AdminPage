@@ -1,15 +1,19 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { Button } from 'antd';
-import MainRouter from './routers/MainRouter';
-import AuthRouter from './routers/AuthRouter';
+import { ConfigProvider } from "antd";
+import { Provider } from "react-redux";
+import "./App.css";
+import store from "./redux/store";
+import Routers from "./routers/Routers";
 
 function App() {
-
   return (
     <div className="App">
-      <AuthRouter />
+      {
+        <ConfigProvider>
+          <Provider store={store}>
+            <Routers />
+          </Provider>
+        </ConfigProvider>
+      }
     </div>
   );
 }
