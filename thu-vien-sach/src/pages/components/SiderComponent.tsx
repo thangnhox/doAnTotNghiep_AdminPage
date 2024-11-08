@@ -5,17 +5,13 @@ import { AiOutlineDashboard } from "react-icons/ai";
 import {
   MdLibraryBooks,
   MdOutlineDiscount,
+  MdPerson,
   MdShoppingCartCheckout,
 } from "react-icons/md";
 import { TbCategory } from "react-icons/tb";
 import { Link } from "react-router-dom";
 
-type Props = {
-  collapsed: boolean;
-};
-
-const SiderComponent = (props: Props) => {
-  const { collapsed } = props;
+const SiderComponent = () => {
   const menuItems: ItemType<MenuItemType>[] = [
     {
       key: "dash-board",
@@ -29,17 +25,54 @@ const SiderComponent = (props: Props) => {
     {
       key: "book",
       label: (
-        <Link className="nav-item" to={"/book"}>
+        <Link className="nav-item" to={"/books"}>
           Sách
         </Link>
       ),
       icon: <MdLibraryBooks />,
+      children: [
+        {
+          key: "add-book",
+          label: (
+            <Link className="nav-item" to={"books/add-book"}>
+              Thêm sách
+            </Link>
+          ),
+        },
+      ],
     },
     {
       key: "category",
       label: (
-        <Link className="nav-item" to={"/category"}>
+        <Link className="nav-item" to={"/categories"}>
           Danh mục sách
+        </Link>
+      ),
+      icon: <TbCategory />,
+    },
+    {
+      key: "membership",
+      label: (
+        <Link className="nav-item" to={"/memberships"}>
+          Gói thành viên
+        </Link>
+      ),
+      icon: <TbCategory />,
+    },
+    {
+      key: "authors",
+      label: (
+        <Link className="nav-item" to={"/authors"}>
+          Tác giả
+        </Link>
+      ),
+      icon: <MdPerson />,
+    },
+    {
+      key: "publisher",
+      label: (
+        <Link className="nav-item" to={"/publishers"}>
+          Nhà xuất bản
         </Link>
       ),
       icon: <TbCategory />,
@@ -47,7 +80,7 @@ const SiderComponent = (props: Props) => {
     {
       key: "discount",
       label: (
-        <Link className="nav-item" to={"/discount"}>
+        <Link className="nav-item" to={"/discounts"}>
           Mã giảm giá
         </Link>
       ),
@@ -56,7 +89,7 @@ const SiderComponent = (props: Props) => {
     {
       key: "order",
       label: (
-        <Link className="nav-item" to={"/order"}>
+        <Link className="nav-item" to={"/orders"}>
           Đơn hàng
         </Link>
       ),
@@ -66,8 +99,8 @@ const SiderComponent = (props: Props) => {
   return (
     <Sider
       trigger={null}
-      collapsed={collapsed}
-      style={{ background: "white-smoke" }}
+      collapsed={false}
+      style={{ background: "white-smoke", borderRadius: "8px" }}
       color="whitesmoke"
     >
       <div style={{ height: "100px" }}>This is the place for logo</div>
