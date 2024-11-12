@@ -1,5 +1,5 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Button, Card, message, Table, TableProps } from "antd";
+import { Button, Card, message, Table, TableProps, Tooltip } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
@@ -44,11 +44,13 @@ const CategoryPage = () => {
       title: "Thao tác",
       render: (_, cat, __) => (
         <div className="d-flex flex-row justify-content-end">
-          <Button
-            shape="circle"
-            icon={<InfoCircleOutlined />}
-            onClick={() => navigateToDetail(cat.id)}
-          />
+          <Tooltip title={"Chi tiết"} placement="top">
+            <Button
+              shape="circle"
+              icon={<InfoCircleOutlined />}
+              onClick={() => navigate(`${cat.id}`)}
+            />
+          </Tooltip>
         </div>
       ),
     },
@@ -90,8 +92,6 @@ const CategoryPage = () => {
     console.log(addCategoryForm.getFieldsValue());
     addCategoryForm.submit();
   };
-
-  const navigateToDetail = (id: number) => navigate(`${id}`);
 
   return (
     <>
