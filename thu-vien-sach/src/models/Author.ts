@@ -4,4 +4,5 @@ export default interface Author {
   birthDate: string;
   description: string;
   nationality: string;
+  books: number;
 }
