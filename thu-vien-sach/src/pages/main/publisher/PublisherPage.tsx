@@ -1,10 +1,10 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Button, Card, message, Table, TableProps } from "antd";
+import { Button, Card, message, Table, TableProps, Tooltip } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ResponseDTO from "../../../dtos/ResponseDTO";
+import ResponseListDTO from "../../../dtos/Response/ResponseListDTO";
 import Publisher from "../../../models/Publisher";
 import { handleAPI } from "../../../remotes/apiHandle";
 import AddPublisherModal from "./components/AddPublisherModal";
@@ -43,11 +43,13 @@ const PublisherPage = () => {
       title: "Thao tác",
       render: (_, publisher, __) => (
         <div className="d-flex flex-row justify-content-end">
-          <Button
-            shape="circle"
-            icon={<InfoCircleOutlined />}
-            onClick={() => navigate(`${publisher.id}`)}
-          />
+          <Tooltip title={"Chi tiết"} placement="top">
+            <Button
+              shape="circle"
+              icon={<InfoCircleOutlined />}
+              onClick={() => navigate(`${publisher.id}`)}
+            />
+          </Tooltip>
         </div>
       ),
     },
@@ -88,7 +90,7 @@ const PublisherPage = () => {
   const onConfirmAddPublisher = async () => {
     try {
       setLoading(true);
-      const res: AxiosResponse<ResponseDTO<Publisher>> = await handleAPI(
+      const res: AxiosResponse<ResponseListDTO<Publisher>> = await handleAPI(
         `publisher/add`,
         { publisherName: addPublisherForm.getFieldValue("publisherName") },
         "post"
