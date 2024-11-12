@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getStorage, ref } from "firebase/storage";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -13,9 +13,5 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const fireStorage = getStorage(app);
-const pdfRef = ref(fireStorage, "pdfs");
-const imageRef = ref(fireStorage, "images");
 
-const uploadCoverImage = async (file: File) => {};
-
-export { imageRef, pdfRef };
+export { fireStorage };
