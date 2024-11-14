@@ -1,8 +1,20 @@
-import { Button, Card, Form, Input, InputNumber, message, Select } from "antd";
+import {
+  Button,
+  Card,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Select,
+  Typography,
+} from "antd";
 import { useForm } from "antd/es/form/Form";
 import { AxiosResponse } from "axios";
+import dayjs from "dayjs";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { AppConstants } from "../../../constants";
 import ResponseListDTO from "../../../dtos/Response/ResponseListDTO";
 import { fireStorage } from "../../../firebase/firebaseConfig";
 import Author from "../../../models/Author";
@@ -17,11 +29,6 @@ interface PageState {
   publishers: Publisher[];
 }
 
-type SearchParams = {
-  value: number;
-  lable: string;
-};
-
 const AddBookPage = () => {
   const [state, setState] = useState<PageState>({
     authors: [],
@@ -30,13 +37,10 @@ const AddBookPage = () => {
     publishers: [],
   });
   const [fileUpload, setFileUpload] = useState<File | undefined>(undefined);
-
-  const [publisherParams, setPublisherParams] = useState<string | undefined>();
-
-  const [authorSelected, setAuthorSelected] = useState<
-    SearchParams | undefined
-  >(undefined);
-
+  const [imageUpload, setImageUpload] = useState<File | undefined>(undefined);
+  const [selectedAuthorId, setSelectedAuthorId] = useState<number>();
+  const [selectedPublisherId, setSelectedPublisherId] = useState<number>();
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>();
   const [addBookForm] = useForm();
 
   const formItemLayout = {
@@ -50,53 +54,6 @@ const AddBookPage = () => {
     },
   };
 
-  useEffect(() => {
-    try {
-      setState((prev) => ({
-        ...prev,
-        isLoading: true,
-      }));
-      getAuthors();
-      getCategories();
-      getPublisher(publisherParams);
-    } catch (error: any) {
-      message.error(error.message);
-    } finally {
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-      }));
-    }
-  }, [publisherParams]);
-
-  const getAuthors = async () => {};
-
-  const getCategories = async () => {};
-
-  const getPublisher = async (publisherParams?: string) => {
-    const res: AxiosResponse<ResponseListDTO<Publisher[]>> = await handleAPI(
-      publisherParams ? `publisher/find/${publisherParams}` : `publisher`
-    );
-    if (res.status === 200) {
-      setState((prev) => ({
-        ...prev,
-        publishers: res.data.data,
-      }));
-    }
-  };
-
-  const onChangePublisherSelect = (value: string) => {
-    // console.log(value);
-    // setAuthorSelected({
-    //   lable: value.lable,
-    //   value: value.value,
-    // });
-  };
-
-  const onSearchPublisherSelect = (value: string) => {
-    // console.log(value);
-  };
-
   const handleAddBook = async () => {
     setState((prev) => ({
       ...prev,
@@ -107,22 +64,132 @@ const AddBookPage = () => {
         message.error("Chưa có file");
         return;
       }
+      if (!imageUpload) {
+        message.error("Chưa có hình ảnh");
+        return;
+      }
       const pdfRef = ref(fireStorage, `pdfs/${fileUpload.name}`);
+      const imageRef = ref(fireStorage, `images/${imageUpload.name}`);
 
       const uploadFileReponse = await uploadBytes(pdfRef, fileUpload);
-      const urlLink: string = await getDownloadURL(uploadFileReponse.ref);
+      const urlPDFLink: string = await getDownloadURL(uploadFileReponse.ref);
 
+      const uploadImageResponse = await uploadBytes(imageRef, imageUpload);
+      const urlImageLink: string = await getDownloadURL(
+        uploadImageResponse.ref
+      );
+      const title: string = addBookForm.getFieldValue("title");
+      const description: string = addBookForm.getFieldValue("description");
+      const publishDateObj: string = addBookForm.getFieldValue("publishDate");
+      const pageCount: string = addBookForm.getFieldValue("pageCount");
+      const price: string = addBookForm.getFieldValue("price");
+
+      const publishDate: string = dayjs(publishDateObj).format(
+        AppConstants.dateFormat
+      );
+
+      if (!selectedCategoryIds || selectedCategoryIds.length < 0) {
+        message.error("Chưa chọn thể loại");
+        return;
+      }
+
+      if (!selectedAuthorId) {
+        message.error("Chưa chọn tác giả");
+        return;
+      }
+
+      if (!selectedPublisherId) {
+        message.error("Chưa chọn nhà xuất bản");
+        return;
+      }
+
+      const newBook = {
+        title,
+        description,
+        pageCount,
+        price,
+        fileUrl: urlPDFLink,
+        coverUrl: urlImageLink,
+        status: 3,
+        authorsId: selectedAuthorId,
+        publisherId: selectedPublisherId,
+        publishDate,
+        categoryIds: selectedCategoryIds,
+        isRecommended: 1,
+      };
       //Todo: handle request Back-end
 
+      const res = await handleAPI(`books/add`, newBook, "post");
       message.success("Tải lên file thành công");
+      console.log(res);
+      window.history.back();
     } catch (error: any) {
       message.error(error.message);
+      console.log(error);
     } finally {
       setState((prev) => ({
         ...prev,
         isLoading: false,
       }));
     }
+  };
+
+  const handleSearchAuthor = async (authorName: string) => {
+    if (!authorName.trim()) {
+      return;
+    }
+    try {
+      const res: AxiosResponse<ResponseListDTO<Author[]>> = await handleAPI(
+        `authors/find?name=${authorName}`
+      );
+      setState((prev) => ({
+        ...prev,
+        authors: res.data.data,
+      }));
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const handleSearchPublisher = async (publisherName: string) => {
+    if (!publisherName.trim()) {
+      return;
+    }
+    try {
+      const res: AxiosResponse<ResponseListDTO<Author[]>> = await handleAPI(
+        `publisher/find/${publisherName}`
+      );
+      setState((prev) => ({
+        ...prev,
+        publishers: res.data.data,
+      }));
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const handleSearchCategory = async (categoryName: string) => {
+    if (!categoryName.trim()) {
+      return;
+    }
+    try {
+      const res: AxiosResponse<ResponseListDTO<Category[]>> = await handleAPI(
+        `categories/find/${categoryName}`
+      );
+      setState((prev) => ({
+        ...prev,
+        categories: res.data.data,
+      }));
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const onChageDate = (date: dayjs.Dayjs, dateString: string | string[]) => {
+    addBookForm.setFieldValue(
+      "publishDate",
+      dayjs(date, AppConstants.dateFormat)
+    );
   };
 
   return (
@@ -133,9 +200,9 @@ const AddBookPage = () => {
             <Form.Item
               name={"title"}
               label={"Tên sách"}
-              required
               rules={[
                 {
+                  required: true,
                   message: "Tên sách không được trống ",
                 },
               ]}
@@ -145,11 +212,14 @@ const AddBookPage = () => {
             <Form.Item
               name={"price"}
               label={"Giá sách"}
-              required
               rules={[
                 {
                   type: "number",
                   message: "Giá sách phải là một số",
+                },
+                {
+                  required: true,
+                  message: "Giá sách không được để trống",
                 },
               ]}
             >
@@ -163,11 +233,14 @@ const AddBookPage = () => {
             <Form.Item
               name={"pageCount"}
               label={"Số trang"}
-              required
               rules={[
                 {
                   type: "number",
                   message: "Số trang sách phải là một số",
+                },
+                {
+                  required: true,
+                  message: "Số trang không được để trống",
                 },
               ]}
             >
@@ -179,33 +252,88 @@ const AddBookPage = () => {
               />
             </Form.Item>
             <Form.Item
-              name={"description"}
-              label={"Mô tả"}
-              required
+              label="Ngày phát hành"
+              name={"publishDate"}
+              initialValue={dayjs(dayjs(), AppConstants.dateFormat)}
               rules={[
                 {
-                  min: 10,
-                  message: "Mô tả ít nhất 10 ký tự",
+                  required: true,
+                  message: "Ngày phát hành không được để trống",
                 },
               ]}
             >
-              <Input.TextArea allowClear />
+              <DatePicker
+                style={{ width: "100%" }}
+                allowClear={false}
+                defaultValue={dayjs(dayjs(), AppConstants.dateFormat)}
+                format={AppConstants.dateFormat}
+                onChange={onChageDate}
+              />
+            </Form.Item>
+            <Form.Item label="Thể loại">
+              <Select
+                showSearch
+                placeholder={"Khoa học"}
+                mode="multiple"
+                defaultActiveFirstOption={false}
+                notFoundContent={"Không tìm thấy"}
+                optionFilterProp="label"
+                onSearch={handleSearchCategory}
+                onChange={setSelectedCategoryIds}
+                options={(state.categories || []).map((categories) => ({
+                  value: categories.id,
+                  label: categories.name,
+                }))}
+                optionRender={(category) => (
+                  <Typography.Text>{category.label}</Typography.Text>
+                )}
+              />
             </Form.Item>
             <Form.Item label={"Nhà xuất bản"}>
               <Select
                 showSearch
+                placeholder={"Kim Đồng"}
+                defaultActiveFirstOption={false}
+                notFoundContent={"Không tìm thấy"}
                 optionFilterProp="label"
-                labelInValue={true}
-                optionLabelProp="value"
-                onChange={onChangePublisherSelect}
-                onSearch={onSearchPublisherSelect}
-              >
-                {state.publishers.map((index) => (
-                  <Select.Option key={index.id} value={index.name}>
-                    {index.name}
-                  </Select.Option>
-                ))}
-              </Select>
+                onSearch={handleSearchPublisher}
+                onChange={setSelectedPublisherId}
+                options={(state.publishers || []).map((publisher) => ({
+                  value: publisher.id,
+                  label: publisher.name,
+                }))}
+              />
+            </Form.Item>
+            <Form.Item label="Tác giả">
+              <Select
+                showSearch
+                placeholder={"Nguyễn Văn A"}
+                defaultActiveFirstOption={false}
+                notFoundContent={"Không tìm thấy"}
+                optionFilterProp="label"
+                onSearch={handleSearchAuthor}
+                onChange={setSelectedAuthorId}
+                options={(state.authors || []).map((author) => ({
+                  value: author.id,
+                  label: author.name,
+                }))}
+              />
+            </Form.Item>
+            <Form.Item
+              name={"description"}
+              label={"Mô tả"}
+              rules={[
+                {
+                  min: 20,
+                  message: "Mô tả ít nhất 20 ký tự",
+                },
+                {
+                  required: true,
+                  message: "Mô tả không được để trống",
+                },
+              ]}
+            >
+              <Input.TextArea allowClear />
             </Form.Item>
 
             <Form.Item label="File" name="file">
@@ -225,11 +353,27 @@ const AddBookPage = () => {
                 }}
               />
             </Form.Item>
-
+            <Form.Item label="Ảnh bìa" name="image">
+              <input
+                style={{
+                  width: "100%",
+                }}
+                id="file-upload"
+                name="image"
+                type="file"
+                accept="image/png, image/gif, image/jpeg"
+                aria-label="Upload a Image for cover book"
+                onChange={(event) => {
+                  if (event.target.files) {
+                    setImageUpload(event.target.files[0]);
+                  }
+                }}
+              />
+            </Form.Item>
             <Button
               type="primary"
               onClick={handleAddBook}
-              disabled={fileUpload === undefined}
+              disabled={fileUpload === undefined && imageUpload === undefined}
               loading={state.isLoading}
               style={{ marginTop: 16 }}
             >
@@ -238,7 +382,6 @@ const AddBookPage = () => {
           </Form>
         </Card>
       </div>
-      <div className="col"></div>
     </div>
   );
 };
