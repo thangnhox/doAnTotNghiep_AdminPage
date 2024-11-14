@@ -1,4 +1,4 @@
 export type LoginResponse = {
   message: string;
-  token: string;
+  data: string;
 };
