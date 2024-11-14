@@ -13,12 +13,11 @@ type PageState = {
   pageSize: number;
   page: number;
   total: number;
+  isLoading: boolean;
+  isAddCategoryModalOpen: boolean;
 };
 
 const CategoryPage = () => {
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const [isAddCategoryModalOpen, setAddCategoryModal] =
-    useState<boolean>(false);
   const navigate = useNavigate();
   const [addCategoryForm] = useForm();
   const [pageState, setPageState] = useState<PageState>({
@@ -26,6 +25,8 @@ const CategoryPage = () => {
     page: 1,
     pageSize: 10,
     total: 0,
+    isAddCategoryModalOpen: false,
+    isLoading: false,
   });
 
   const tableColums: TableProps<Category>["columns"] = [
@@ -62,35 +63,75 @@ const CategoryPage = () => {
 
   const getCategory = async (page: number) => {
     try {
-      setLoading(true);
+      setPageState((prev) => ({
+        ...prev,
+        isLoading: true,
+      }));
       const res: AxiosResponse<PageState> = await handleAPI(
         `categories?page=${page}&pageSize=${pageState.pageSize}`
       );
-      setPageState({
+      setPageState((prev) => ({
+        ...prev,
         data: res.data.data,
         page: res.data.page,
         pageSize: res.data.pageSize,
         total: res.data.total,
-      });
+      }));
     } catch (error: any) {
       message.error(error.message);
     } finally {
-      setLoading(false);
+      setPageState((prev) => ({
+        ...prev,
+        isLoading: false,
+      }));
     }
   };
 
   const openAddCategoryModal = () => {
-    setAddCategoryModal(true);
+    setPageState((prev) => ({
+      ...prev,
+      isAddCategoryModalOpen: true,
+    }));
   };
 
   const onCancelAddCategoryModal = () => {
     addCategoryForm.resetFields();
-    setAddCategoryModal(false);
+    setPageState((prev) => ({
+      ...prev,
+      isAddCategoryModalOpen: false,
+    }));
   };
 
   const performAddCategory = async () => {
-    console.log(addCategoryForm.getFieldsValue());
-    addCategoryForm.submit();
+    try {
+      setPageState((prev) => ({
+        ...prev,
+        isLoading: true,
+      }));
+      addCategoryForm.submit();
+      const categoryName: string =
+        addCategoryForm.getFieldValue("categoryName");
+      const newCategory = {
+        categoryName,
+      };
+      const res: AxiosResponse<Category> = await handleAPI(
+        `categories/add`,
+        newCategory,
+        "post"
+      );
+      if (res.status === 201) {
+        onCancelAddCategoryModal();
+        message.success("Thêm thành công");
+      }
+    } catch (error: any) {
+      message.error(error.response.data.message);
+      console.log(error.response.data.message);
+    } finally {
+      setPageState((prev) => ({
+        ...prev,
+        isLoading: false,
+      }));
+    }
   };
 
   return (
@@ -98,7 +139,7 @@ const CategoryPage = () => {
       <div className="container-fulid">
         <div className="m-3">
           <Card
-            loading={isLoading}
+            loading={pageState.isLoading}
             title="Danh mục sách"
             extra={
               <Button onClick={openAddCategoryModal} type="primary">
@@ -125,7 +166,7 @@ const CategoryPage = () => {
             />
             <AddCategoryModal
               form={addCategoryForm}
-              isOpen={isAddCategoryModalOpen}
+              isOpen={pageState.isAddCategoryModalOpen}
               onCancel={onCancelAddCategoryModal}
               onComplete={performAddCategory}
             />

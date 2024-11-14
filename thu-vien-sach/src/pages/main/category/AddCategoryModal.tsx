@@ -29,12 +29,16 @@ const AddCategoryModal = (props: Props) => {
     >
       <Form form={form} className="mt-3">
         <Form.Item
-          name={"name"}
+          name={"categoryName"}
           rules={[
             {
               message: "Tên danh mục không được trống",
               whitespace: true,
               required: true,
+            },
+            {
+              message: "Tên danh mục phải nhiều hơn 5 ký tự",
+              min: 5,
             },
           ]}
         >
