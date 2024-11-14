@@ -2,7 +2,6 @@ import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import HeaderComponent from "../pages/components/HeaderComponent";
 import SiderComponent from "../pages/components/SiderComponent";
 import AuthorPage from "../pages/main/authors/AuthorPage";
 import AddBookPage from "../pages/main/book/AddBookPage";
@@ -23,7 +22,7 @@ const MainRouter = () => {
         <Layout>
           <SiderComponent />
           <Layout>
-            <HeaderComponent />
+            {/* <HeaderComponent /> */}
             <Content className="m-3 p-3">
               <Routes>
                 <Route path="/" element={<HomePage />} />

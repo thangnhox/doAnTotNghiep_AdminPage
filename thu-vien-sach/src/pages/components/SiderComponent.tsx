@@ -103,7 +103,7 @@ const SiderComponent = () => {
       style={{ background: "white-smoke", borderRadius: "8px" }}
       color="whitesmoke"
     >
-      <div style={{ height: "100px" }}>This is the place for logo</div>
+      {/* <div style={{ height: "100px" }}>This is the place for logo</div> */}
       <div>
         <Menu
           mode="inline"
