@@ -75,6 +75,9 @@ const AddAuthorModal = (props: ModalProps) => {
             placeholder="Select a person"
             optionFilterProp="label"
             allowClear
+            onChange={(val) => {
+              form.setFieldValue("nationality", val);
+            }}
             options={countriesArray}
           />
         </Form.Item>

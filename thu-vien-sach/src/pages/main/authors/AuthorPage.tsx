@@ -1,5 +1,13 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Button, Card, message, Table, TableProps, Tooltip } from "antd";
+import {
+  Button,
+  Card,
+  message,
+  Table,
+  TableProps,
+  Tooltip,
+  Typography,
+} from "antd";
 import { useForm } from "antd/es/form/Form";
 import { AxiosResponse } from "axios";
 import dayjs from "dayjs";
@@ -8,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { AppConstants } from "../../../constants";
 import Author from "../../../models/Author";
 import { handleAPI } from "../../../remotes/apiHandle";
+import { reFormatToDDMMYY } from "../../../utils/datetimeUtil";
 import AddAuthorModal from "./AddAuthorModal";
 
 interface PageState {
@@ -20,6 +29,7 @@ interface PageState {
 }
 
 const AuthorPage = () => {
+  const { Text } = Typography;
   const [state, setState] = useState<PageState>({
     isLoading: false,
     data: [],
@@ -44,7 +54,10 @@ const AuthorPage = () => {
     {
       key: "birthDate",
       dataIndex: "birthDate",
-      title: "Năm sinh",
+      title: "Ngày sinh",
+      render: (_, author, __) => (
+        <Text>{reFormatToDDMMYY(author.birthDate)}</Text>
+      ),
     },
     {
       key: "nationality",
@@ -94,7 +107,8 @@ const AuthorPage = () => {
         pageSize: res.data.pageSize,
       }));
     } catch (error: any) {
-      message.error(error.message);
+      message.error(error.response.data.message);
+      console.log(error.response.data.message);
     } finally {
       setState((prev) => ({
         ...prev,
@@ -128,12 +142,10 @@ const AuthorPage = () => {
       addAuthorForm.submit();
       const name: String = addAuthorForm.getFieldValue("name");
       const birthDate: dayjs.Dayjs = addAuthorForm.getFieldValue("birthDate");
-      const authorNationalityObject: { key: string; value: string } =
-        addAuthorForm.getFieldValue("nationality");
+      const nationality = addAuthorForm.getFieldValue("nationality");
       const description: String = addAuthorForm.getFieldValue("description");
 
       const authorBirthday = birthDate.format(AppConstants.dateFormat);
-      const nationality = authorNationalityObject.value;
 
       const newAuthor = {
         name,
@@ -141,17 +153,22 @@ const AuthorPage = () => {
         nationality,
         description,
       };
+
+      console.log(newAuthor);
+
       const res: AxiosResponse<Author> = await handleAPI(
         `authors/add`,
         newAuthor,
         "post"
       );
+
       if (res.status === 201) {
         onCancelAdd();
         getAuthors();
       }
     } catch (error: any) {
       message.error(error.message);
+      console.log(`Add Author error: ${error}`);
     } finally {
       setState((prev) => ({
         ...prev,

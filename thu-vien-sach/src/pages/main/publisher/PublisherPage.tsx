@@ -72,7 +72,8 @@ const PublisherPage = () => {
         total: res.data.total,
       }));
     } catch (error: any) {
-      message.error(error.message);
+      message.error(error.response.data.message);
+      console.log(error.response.data.message);
     } finally {
       setLoading(false);
     }
