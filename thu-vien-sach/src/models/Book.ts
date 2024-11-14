@@ -1,11 +1,14 @@
 export default interface Book {
-  id: number;
-  title: string;
-  price: string;
-  fileUrl: string;
-  coverUrl: string;
+  BookID: number;
+  Title: string;
+  Price: string;
+  file_url: string;
+  cover_url: string;
   status: number;
-  publisherId: number;
-  publishDate: string;
+  Description: string;
+  PublisherName: string;
+  PublishDate: string;
+  AuthorName: string;
   isRecommend: number;
+  Categories: string[];
 }
