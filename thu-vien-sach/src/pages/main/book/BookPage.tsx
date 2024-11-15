@@ -11,7 +11,7 @@ import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ResponseListDTO from "../../../dtos/Response/ResponseListDTO";
-import Book from "../../../models/Book";
+import Book from "../../../models/book/Book";
 import { handleAPI } from "../../../remotes/apiHandle";
 import { reFormatToDDMMYY } from "../../../utils/datetimeUtil";
 

@@ -1,6 +1,7 @@
 import {
   Button,
   Card,
+  Checkbox,
   DatePicker,
   Form,
   Input,
@@ -18,6 +19,7 @@ import { AppConstants } from "../../../constants";
 import ResponseListDTO from "../../../dtos/Response/ResponseListDTO";
 import { fireStorage } from "../../../firebase/firebaseConfig";
 import Author from "../../../models/Author";
+import { BookStatus } from "../../../models/book/BookEnum";
 import Category from "../../../models/Category";
 import Publisher from "../../../models/Publisher";
 import { handleAPI } from "../../../remotes/apiHandle";
@@ -38,6 +40,8 @@ const AddBookPage = () => {
   });
   const [fileUpload, setFileUpload] = useState<File | undefined>(undefined);
   const [imageUpload, setImageUpload] = useState<File | undefined>(undefined);
+  const [isRecommended, setRecommend] = useState<boolean>(true);
+  const [bookStatus, setBookStatus] = useState<number>();
   const [selectedAuthorId, setSelectedAuthorId] = useState<number>();
   const [selectedPublisherId, setSelectedPublisherId] = useState<number>();
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>();
@@ -110,18 +114,16 @@ const AddBookPage = () => {
         price,
         fileUrl: urlPDFLink,
         coverUrl: urlImageLink,
-        status: 3,
+        status: bookStatus,
         authorsId: selectedAuthorId,
         publisherId: selectedPublisherId,
         publishDate,
         categoryIds: selectedCategoryIds,
-        isRecommended: 1,
+        isRecommended: isRecommended ? 1 : 0,
       };
-      //Todo: handle request Back-end
 
-      const res = await handleAPI(`books/add`, newBook, "post");
+      await handleAPI(`books/add`, newBook, "post");
       message.success("Tải lên file thành công");
-      console.log(res);
       window.history.back();
     } catch (error: any) {
       message.error(error.message);
@@ -319,6 +321,25 @@ const AddBookPage = () => {
                 }))}
               />
             </Form.Item>
+            <Form.Item label="Cho phép">
+              <Select
+                onChange={(val, _) => setBookStatus(val)}
+                options={[
+                  {
+                    label: BookStatus.ALL.lable,
+                    value: BookStatus.ALL.value,
+                  },
+                  {
+                    label: BookStatus.BUY_ONLY.lable,
+                    value: BookStatus.BUY_ONLY.value,
+                  },
+                  {
+                    label: BookStatus.MEMBERSHIP_ONLY.lable,
+                    value: BookStatus.MEMBERSHIP_ONLY.value,
+                  },
+                ]}
+              />
+            </Form.Item>
             <Form.Item
               name={"description"}
               label={"Mô tả"}
@@ -334,6 +355,14 @@ const AddBookPage = () => {
               ]}
             >
               <Input.TextArea allowClear />
+            </Form.Item>
+            <Form.Item valuePropName="checked">
+              <Checkbox
+                checked={isRecommended}
+                onChange={(val) => setRecommend(val.target.checked)}
+              >
+                Đề cử
+              </Checkbox>
             </Form.Item>
 
             <Form.Item label="File" name="file">
