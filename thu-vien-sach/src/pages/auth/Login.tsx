@@ -33,12 +33,13 @@ const Login = () => {
         password,
       };
       const res = await handleAPI(`admin/login`, loginReq, "post");
-      res && dispatch(addAuth({ token: res.data.token }));
+      res && dispatch(addAuth({ token: res.data.data }));
       if (isRememberme) {
         localStorage.setItem(AppConstants.token, res.data.token);
       }
     } catch (error: any) {
       setErrorMessage(error.response.data.message);
+      console.log(error);
     } finally {
       setIsLoading(false);
     }

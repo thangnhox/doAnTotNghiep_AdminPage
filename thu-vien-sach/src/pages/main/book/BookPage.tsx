@@ -1,3 +1,4 @@
+import { InfoCircleOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -5,6 +6,7 @@ import {
   message,
   Table,
   TableProps,
+  Tooltip,
   Typography,
 } from "antd";
 import { AxiosResponse } from "axios";
@@ -60,6 +62,7 @@ const BookPage = () => {
         <Typography.Text>{reFormatToDDMMYY(book.PublishDate)}</Typography.Text>
       ),
     },
+
     {
       title: "Đề xuất",
       dataIndex: "IsRecommended",
@@ -84,6 +87,24 @@ const BookPage = () => {
       //   </Space>
 
       // ),
+    },
+    {
+      title: "Thao tác",
+      key: "actions",
+      render: (_, book, __) => (
+        <div className="d-flex flex-row justify-content-center">
+          <Tooltip title="Chi tiết">
+            <Button
+              shape="circle"
+              type="default"
+              onClick={() => {
+                navigate(`detail/${book.BookID}`);
+              }}
+              icon={<InfoCircleOutlined />}
+            />
+          </Tooltip>
+        </div>
+      ),
     },
   ];
   useEffect(() => {
@@ -132,7 +153,12 @@ const BookPage = () => {
           </Button>
         }
       >
-        <Table bordered columns={tableColums} dataSource={state.data} />
+        <Table
+          bordered
+          columns={tableColums}
+          dataSource={state.data}
+          rowKey={(row) => row.BookID}
+        />
       </Card>
     </>
   );

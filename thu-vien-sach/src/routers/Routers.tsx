@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppConstants } from "../constants";
 import { addAuth, authState, AuthState } from "../redux/authSlice";
+import { validateToken } from "../utils/jwtUtil";
 import AuthRouter from "./AuthRouter";
 import MainRouter from "./MainRouter";
 
@@ -17,8 +18,9 @@ const Routers = () => {
 
   const checkLogin = () => {
     setIsLoading(true);
-    const res = localStorage.getItem(AppConstants.token);
-    res && dispatch(addAuth(JSON.parse(res)));
+    const res = localStorage.getItem(AppConstants.token) ?? undefined;
+    const isValid = validateToken(res);
+    res && isValid && dispatch(addAuth(JSON.parse(res)));
     setIsLoading(false);
   };
   return isLoading ? <Spin /> : !auth.token ? <AuthRouter /> : <MainRouter />;

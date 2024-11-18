@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SiderComponent from "../pages/components/SiderComponent";
 import AuthorPage from "../pages/main/authors/AuthorPage";
 import AddBookPage from "../pages/main/book/AddBookPage";
+import BookDetail from "../pages/main/book/BookDetail";
 import BookPage from "../pages/main/book/BookPage";
 import CategoryDetail from "../pages/main/category/CategoryDetail";
 import CategoryPage from "../pages/main/category/CategoryPage";
@@ -28,6 +29,7 @@ const MainRouter = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/books" element={<BookPage />} />
                 <Route path="/books/add-book" element={<AddBookPage />} />
+                <Route path="/books/detail/:id" element={<BookDetail />} />
                 <Route path="/authors" element={<AuthorPage />} />
                 <Route path="/publishers" element={<PublisherPage />} />
                 <Route path="/publishers/:id" element={<PublisherDetail />} />
