@@ -35,7 +35,7 @@ const Login = () => {
       const res = await handleAPI(`admin/login`, loginReq, "post");
       res && dispatch(addAuth({ token: res.data.data }));
       if (isRememberme) {
-        localStorage.setItem(AppConstants.token, res.data.token);
+        localStorage.setItem(AppConstants.token, res.data.data);
       }
     } catch (error: any) {
       setErrorMessage(error.response.data.message);
