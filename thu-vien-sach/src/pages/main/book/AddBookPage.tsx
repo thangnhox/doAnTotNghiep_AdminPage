@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import { AppConstants } from "../../../constants";
-import ResponseListDTO from "../../../dtos/Response/ResponseListDTO";
+import { ResponseDTO } from "../../../dtos/Response/ResponseListDTO";
 import { fireStorage } from "../../../firebase/firebaseConfig";
 import Author from "../../../models/Author";
 import { BookStatus } from "../../../models/book/BookEnum";
@@ -141,7 +141,7 @@ const AddBookPage = () => {
       return;
     }
     try {
-      const res: AxiosResponse<ResponseListDTO<Author[]>> = await handleAPI(
+      const res: AxiosResponse<ResponseDTO<Author[]>> = await handleAPI(
         `authors/find?name=${authorName}`
       );
       setState((prev) => ({
@@ -158,7 +158,7 @@ const AddBookPage = () => {
       return;
     }
     try {
-      const res: AxiosResponse<ResponseListDTO<Author[]>> = await handleAPI(
+      const res: AxiosResponse<ResponseDTO<Author[]>> = await handleAPI(
         `publisher/find/${publisherName}`
       );
       setState((prev) => ({
@@ -175,7 +175,7 @@ const AddBookPage = () => {
       return;
     }
     try {
-      const res: AxiosResponse<ResponseListDTO<Category[]>> = await handleAPI(
+      const res: AxiosResponse<ResponseDTO<Category[]>> = await handleAPI(
         `categories/find/${categoryName}`
       );
       setState((prev) => ({

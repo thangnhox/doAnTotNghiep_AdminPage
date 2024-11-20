@@ -1,4 +1,4 @@
-export default interface ResponseListDTO<T> {
+export interface ResponseDTO<T> {
   message: string;
   data: T;
   total: number | undefined;

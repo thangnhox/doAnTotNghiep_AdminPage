@@ -12,7 +12,7 @@ import {
 import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ResponseListDTO from "../../../dtos/Response/ResponseListDTO";
+import { ResponseDTO } from "../../../dtos/Response/ResponseListDTO";
 import Book from "../../../models/book/Book";
 import { handleAPI } from "../../../remotes/apiHandle";
 import { reFormatToDDMMYY } from "../../../utils/datetimeUtil";
@@ -118,7 +118,7 @@ const BookPage = () => {
         isLoading: false,
       }));
 
-      const res: AxiosResponse<ResponseListDTO<any>> = await handleAPI(
+      const res: AxiosResponse<ResponseDTO<any>> = await handleAPI(
         `books?field=Title&page=${state.pageNum}&pageSize=${state.pageSize}`
       );
       setState((prev) => ({
@@ -146,6 +146,7 @@ const BookPage = () => {
   return (
     <>
       <Card
+        loading={state.isLoading}
         title={"Sách"}
         extra={
           <Button onClick={onAddButtonClick} type="primary">
