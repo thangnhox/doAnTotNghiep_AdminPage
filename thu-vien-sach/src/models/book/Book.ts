@@ -4,11 +4,16 @@ export default interface Book {
   Price: string;
   file_url: string;
   cover_url: string;
-  status: number;
+  PageCount: number;
+  status: {
+    type: string;
+    data: number[];
+  };
   Description: string;
   PublisherName: string;
   PublishDate: string;
   AuthorName: string;
   isRecommend: number;
-  Categories: string[];
+  LikesCount: number;
+  Categories: string;
 }
