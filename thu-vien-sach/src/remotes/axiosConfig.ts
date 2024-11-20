@@ -4,7 +4,7 @@ import { AppConstants } from "../constants";
 
 const baseURL = process.env.REACT_APP_BASE_URL ?? "http://localhost:3000";
 
-const getAccessToken = () => {
+export const getAccessToken = () => {
   let token: string = localStorage.getItem(AppConstants.token) ?? "";
   if (token && token.length > 0) {
     token = JSON.parse(token).token;
