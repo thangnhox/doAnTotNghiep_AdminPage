@@ -100,7 +100,7 @@ const SiderComponent = () => {
     <Sider
       trigger={null}
       collapsed={false}
-      style={{ background: "white-smoke", borderRadius: "8px" }}
+      style={{ background: "white-smoke", borderRadius: "8px", height: "100%" }}
       color="whitesmoke"
     >
       {/* <div style={{ height: "100px" }}>This is the place for logo</div> */}
