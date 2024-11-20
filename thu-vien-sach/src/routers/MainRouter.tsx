@@ -7,6 +7,7 @@ import AuthorPage from "../pages/main/authors/AuthorPage";
 import AddBookPage from "../pages/main/book/AddBookPage";
 import BookDetail from "../pages/main/book/BookDetail";
 import BookPage from "../pages/main/book/BookPage";
+import BookReader from "../pages/main/book/BookReader";
 import CategoryDetail from "../pages/main/category/CategoryDetail";
 import CategoryPage from "../pages/main/category/CategoryPage";
 import DiscountPage from "../pages/main/discount/DiscountPage";
@@ -30,6 +31,7 @@ const MainRouter = () => {
                 <Route path="/books" element={<BookPage />} />
                 <Route path="/books/add-book" element={<AddBookPage />} />
                 <Route path="/books/detail/:id" element={<BookDetail />} />
+                <Route path="/books/detail/:id/read" element={<BookReader />} />
                 <Route path="/authors" element={<AuthorPage />} />
                 <Route path="/publishers" element={<PublisherPage />} />
                 <Route path="/publishers/:id" element={<PublisherDetail />} />
