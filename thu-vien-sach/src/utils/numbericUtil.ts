@@ -1,0 +1,1 @@
+export const formatStringRatio = ( ratio: number ) => `${ratio * 100} %`
