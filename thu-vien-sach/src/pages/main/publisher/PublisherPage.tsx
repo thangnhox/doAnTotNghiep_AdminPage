@@ -4,7 +4,7 @@ import { useForm } from "antd/es/form/Form";
 import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ResponseDTO } from "../../../dtos/Response/ResponseListDTO";
+import { ResponseDTO } from "../../../dtos/Response/ResponseDTO";
 import Publisher from "../../../models/Publisher";
 import { handleAPI } from "../../../remotes/apiHandle";
 import AddPublisherModal from "./components/AddPublisherModal";

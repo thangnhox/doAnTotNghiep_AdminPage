@@ -12,7 +12,7 @@ import {
 import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ResponseDTO } from "../../../dtos/Response/ResponseListDTO";
+import { ResponseDTO } from "../../../dtos/Response/ResponseDTO";
 import Book from "../../../models/book/Book";
 import { handleAPI } from "../../../remotes/apiHandle";
 import { reFormatToDDMMYY } from "../../../utils/datetimeUtil";
@@ -129,7 +129,7 @@ const BookPage = () => {
         })),
       }));
     } catch (error: any) {
-      message.error(error.response.message);
+      message.error(error.message);
       console.log(error);
     } finally {
       setState((prev) => ({

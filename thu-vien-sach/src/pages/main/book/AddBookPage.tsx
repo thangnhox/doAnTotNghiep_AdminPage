@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import { AppConstants } from "../../../constants";
-import { ResponseDTO } from "../../../dtos/Response/ResponseListDTO";
+import { ResponseDTO } from "../../../dtos/Response/ResponseDTO";
 import { fireStorage } from "../../../firebase/firebaseConfig";
 import Author from "../../../models/Author";
 import { BookStatus } from "../../../models/book/BookEnum";

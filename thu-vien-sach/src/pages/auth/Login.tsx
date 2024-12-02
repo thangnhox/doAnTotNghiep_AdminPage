@@ -6,6 +6,9 @@ import { useDispatch } from "react-redux";
 import { AppConstants } from "../../constants";
 import { addAuth } from "../../redux/authSlice";
 import { handleAPI } from "../../remotes/apiHandle";
+import { AxiosResponse } from "axios";
+import { ResponseDTO } from "../../dtos/Response/ResponseDTO";
+import { Token } from "typescript";
 
 type LoginObject = {
   email: string;
@@ -32,7 +35,7 @@ const Login = () => {
         email,
         password,
       };
-      const res = await handleAPI(`admin/login`, loginReq, "post");
+      const res: AxiosResponse = await handleAPI(`admin/login`, loginReq, "post");
       res && dispatch(addAuth({ token: res.data.data }));
       if (isRememberme) {
         localStorage.setItem(AppConstants.token, res.data.data);
