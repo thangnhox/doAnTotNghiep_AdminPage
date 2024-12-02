@@ -42,16 +42,7 @@ const BookReader = () => {
 
     try {
       setLoading(true);
-      const token = getAccessToken();
-      const res = await axios.get(
-        `${baseUrl}/books/read/${id}?page=${pageNum}&width=1000&height=1000&density=200`,
-        {
-          responseType: "blob",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await handleAPI(`${baseUrl}/books/read/${id}?page=${pageNum}&width=1000&height=1000&density=200`, null, "get", "blob")
       const blobUrl = URL.createObjectURL(res.data);
       setImage(blobUrl);
       setPreloadedImages((prev) => ({ ...prev, [pageNum]: blobUrl }));
@@ -74,15 +65,7 @@ const BookReader = () => {
     try {
       const promises = pagesToPreload.map(async (page) => {
         if (!preloadedImages[page]) {
-          const res = await axios.get(
-            `${baseUrl}/books/read/${id}?page=${page}&width=1000&height=1000&density=200`,
-            {
-              responseType: "blob",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const res = await handleAPI(`${baseUrl}/books/read/${id}?page=${page}&width=1000&height=1000&density=200`, null, "get", "blob")
           return { page, url: URL.createObjectURL(res.data) };
         }
         return null;
