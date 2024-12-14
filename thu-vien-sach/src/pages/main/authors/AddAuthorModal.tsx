@@ -4,22 +4,82 @@ import {
   Form,
   FormInstance,
   Input,
+  message,
   Modal,
   Select,
 } from "antd";
 import dayjs from "dayjs";
 import { AppConstants, countriesArray } from "../../../constants";
+import { useState } from "react";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { fireStorage } from "../../../firebase/firebaseConfig";
+import { AxiosResponse } from "axios";
+import Author from "../../../models/Author";
+import { handleAPI } from "../../../remotes/apiHandle";
 
 interface ModalProps {
   isOpen: boolean;
   form: FormInstance;
-  onChangeDate: (date: dayjs.Dayjs, dateString: string | string[]) => void;
-  onComplete: () => void;
   onCancel: () => void;
 }
 
 const AddAuthorModal = (props: ModalProps) => {
-  const { isOpen, form, onComplete, onCancel, onChangeDate } = props;
+  const { isOpen, form, onCancel } = props;
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<File | undefined>(
+    undefined
+  );
+
+  const onCompleteAdd = async () => {
+    try {
+      setLoading(true);
+      const name: String = form.getFieldValue("name");
+      const birthDate: dayjs.Dayjs = form.getFieldValue("birthDate");
+      const nationality = form.getFieldValue("nationality");
+      const description: String = form.getFieldValue("description");
+
+      const authorBirthday = birthDate.format(AppConstants.dateFormat);
+
+      if (!selectedImage) {
+        message.error("Chưa chọn hình");
+        return;
+      }
+
+      const imageRef = ref(fireStorage, `images/${selectedImage.name}`);
+
+      const uploadImageResponse = await uploadBytes(imageRef, selectedImage);
+      const urlImageLink: string = await getDownloadURL(
+        uploadImageResponse.ref
+      );
+      const newAuthor = {
+        name,
+        birthDate: authorBirthday,
+        nationality,
+        description,
+        avatar: urlImageLink,
+      };
+
+      console.log(newAuthor);
+
+      const res: AxiosResponse<Author> = await handleAPI(
+        `authors/add`,
+        newAuthor,
+        "post"
+      );
+
+      if (res.status === 201) {
+        onCancel();
+      }
+    } catch (error: any) {
+      console.log(`Add Author error: ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onChangeDate = (date: dayjs.Dayjs, dateString: string | string[]) => {
+    form.setFieldValue("birthDate", dayjs(date, AppConstants.dateFormat));
+  };
 
   return (
     <Modal
@@ -29,16 +89,20 @@ const AddAuthorModal = (props: ModalProps) => {
       centered
       footer={
         <div className="d-flex flex-row justify-content-end gap-3">
-          <Button type="primary" onClick={onComplete}>
+          <Button
+            type="primary"
+            onClick={() => form.submit()}
+            loading={isLoading}
+          >
             Ok
           </Button>
-          <Button type="primary" danger onClick={onCancel}>
+          <Button type="primary" danger onClick={onCancel} loading={isLoading}>
             Huỷ
           </Button>
         </div>
       }
     >
-      <Form form={form}>
+      <Form form={form} onFinish={onCompleteAdd}>
         <Form.Item
           name={"name"}
           label="Tên tác giả"
@@ -64,12 +128,7 @@ const AddAuthorModal = (props: ModalProps) => {
             onChange={onChangeDate}
           />
         </Form.Item>
-        <Form.Item
-          label="Quốc gia"
-          name={"nationality"}
-          initialValue={countriesArray[0]}
-          required
-        >
+        <Form.Item label="Quốc gia" name={"nationality"} required>
           <Select
             showSearch
             placeholder="Select a person"
@@ -79,6 +138,21 @@ const AddAuthorModal = (props: ModalProps) => {
               form.setFieldValue("nationality", val);
             }}
             options={countriesArray}
+          />
+        </Form.Item>
+        <Form.Item initialValue={null} label="Hình ảnh" name={"avatar"}>
+          <input
+            style={{
+              width: "100%",
+            }}
+            id="image-upload"
+            type="file"
+            accept="image/png, image/jpeg"
+            onChange={(e) => {
+              if (e.target.files) {
+                setSelectedImage(e.target.files[0]);
+              }
+            }}
           />
         </Form.Item>
         <Form.Item

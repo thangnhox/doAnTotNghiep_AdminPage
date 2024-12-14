@@ -5,4 +5,5 @@ export default interface Author {
   description: string;
   nationality: string;
   books: number;
+  avatar: string;
 }

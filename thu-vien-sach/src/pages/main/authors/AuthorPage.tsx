@@ -2,6 +2,7 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
+  Image,
   message,
   Table,
   TableProps,
@@ -45,6 +46,18 @@ const AuthorPage = () => {
       key: "id",
       dataIndex: "id",
       title: "Mã tác giả",
+    },
+    {
+      key: "avatar",
+      dataIndex: "avatar",
+      title: "Hình ảnh",
+      render: (_, author, __) => (
+        <Image
+          src={author.avatar}
+          width={200}
+          style={{ borderRadius: "8px" }}
+        />
+      ),
     },
     {
       key: "name",
@@ -132,58 +145,6 @@ const AuthorPage = () => {
     addAuthorForm.resetFields();
   };
 
-  const onCompleteAdd = async () => {
-    setState((prev) => ({
-      ...prev,
-      isLoading: true,
-    }));
-
-    try {
-      addAuthorForm.submit();
-      const name: String = addAuthorForm.getFieldValue("name");
-      const birthDate: dayjs.Dayjs = addAuthorForm.getFieldValue("birthDate");
-      const nationality = addAuthorForm.getFieldValue("nationality");
-      const description: String = addAuthorForm.getFieldValue("description");
-
-      const authorBirthday = birthDate.format(AppConstants.dateFormat);
-
-      const newAuthor = {
-        name,
-        birthDate: authorBirthday,
-        nationality,
-        description,
-      };
-
-      console.log(newAuthor);
-
-      const res: AxiosResponse<Author> = await handleAPI(
-        `authors/add`,
-        newAuthor,
-        "post"
-      );
-
-      if (res.status === 201) {
-        onCancelAdd();
-        getAuthors();
-      }
-    } catch (error: any) {
-      message.error(error.message);
-      console.log(`Add Author error: ${error}`);
-    } finally {
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-      }));
-    }
-  };
-
-  const onChageDate = (date: dayjs.Dayjs, dateString: string | string[]) => {
-    addAuthorForm.setFieldValue(
-      "birthDate",
-      dayjs(date, AppConstants.dateFormat)
-    );
-  };
-
   return (
     <Card
       loading={state.isLoading}
@@ -214,8 +175,6 @@ const AuthorPage = () => {
         isOpen={state.isOpenAddModal}
         form={addAuthorForm}
         onCancel={onCancelAdd}
-        onComplete={onCompleteAdd}
-        onChangeDate={onChageDate}
       />
     </Card>
   );

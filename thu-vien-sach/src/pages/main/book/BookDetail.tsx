@@ -90,9 +90,9 @@ const BookDetail = () => {
                   <Title level={5}>
                     Hình thức:
                     <Text type="secondary" className="ms-3">
-                      {book?.status.data[0] === 1
+                      {book?.status === 1
                         ? "Chỉ bán"
-                        : book?.status.data[0] === 3
+                        : book?.status === 3
                         ? "Gói thành viên và bán"
                         : "Chỉ gói thành viên"}
                     </Text>
@@ -110,12 +110,12 @@ const BookDetail = () => {
                       title="Likes"
                       content={`${book?.LikesCount}`}
                     />
-                    {book?.isRecommend ?? (
+                    {book?.IsRecommended === 1 ? (
                       <DescriptionTextIconComponent
                         title="Recommend"
                         icon={<LikeOutlined />}
                       />
-                    )}
+                    ) : null}
                   </Space>
                 </Space>
               </div>

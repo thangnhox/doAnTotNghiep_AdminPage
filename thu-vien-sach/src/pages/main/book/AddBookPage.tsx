@@ -87,6 +87,7 @@ const AddBookPage = () => {
       const publishDateObj: string = addBookForm.getFieldValue("publishDate");
       const pageCount: string = addBookForm.getFieldValue("pageCount");
       const price: string = addBookForm.getFieldValue("price");
+      const rank: number = addBookForm.getFieldValue("rank");
 
       const publishDate: string = dayjs(publishDateObj).format(
         AppConstants.dateFormat
@@ -120,9 +121,13 @@ const AddBookPage = () => {
         publishDate,
         categoryIds: selectedCategoryIds,
         isRecommended: isRecommended ? 1 : 0,
+        rank: rank,
       };
 
-      await handleAPI(`books/add`, newBook, "post");
+      console.log(newBook);
+
+      const res = await handleAPI(`books/add`, newBook, "post");
+      console.log(res);
       message.success("Tải lên file thành công");
       window.history.back();
     } catch (error: any) {
@@ -355,6 +360,17 @@ const AddBookPage = () => {
               ]}
             >
               <Input.TextArea allowClear />
+            </Form.Item>
+            <Form.Item label="Độ tuổi" name="rank" initialValue={"1"}>
+              <Select
+                defaultValue={"1"}
+                onSelect={(val) => addBookForm.setFieldValue("rank", val)}
+              >
+                <Select.Option key={"1"} children={"Tất cả"} />
+                <Select.Option key={"2"} children={"Trên 6 tuổi"} />
+                <Select.Option key={"3"} children={"Trên 11 tuổi"} />
+                <Select.Option key={"4"} children={"Trên 18 tuôi"} />
+              </Select>
             </Form.Item>
             <Form.Item valuePropName="checked">
               <Checkbox

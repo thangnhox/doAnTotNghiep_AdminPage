@@ -4,6 +4,7 @@ import {
   Card,
   Image,
   message,
+  Spin,
   Table,
   TableProps,
   Tooltip,
@@ -46,13 +47,23 @@ const BookPage = () => {
       key: "coverUrl",
       render: (_, { cover_url }) => (
         <>
-          <Image src={cover_url} alt="Book Cover Image" width={200} />
+          <Image
+            src={cover_url}
+            alt="Book Cover Image"
+            width={200}
+            style={{ borderRadius: "8px" }}
+          />
         </>
       ),
     },
     { title: "Tiêu đề", dataIndex: "Title", key: "title" },
     { title: "Giá sách", dataIndex: "Price", key: "price" },
-    { title: "Trạng thái", dataIndex: "status", key: "status" },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (_, book, __) => renderStatus(book),
+    },
     { title: "Nhà xuất bản", dataIndex: "PublisherName", key: "publisherId" },
     {
       title: "Ngày xuất bản",
@@ -69,7 +80,7 @@ const BookPage = () => {
       key: "isRecommend",
       render: (_, book, __) => (
         <Typography.Text>
-          {book.isRecommend === 1 ? "Đang đề xuất" : "Không đề xuất"}
+          {book.IsRecommended === 1 ? "Đang đề xuất" : "Không đề xuất"}
         </Typography.Text>
       ),
     },
@@ -77,16 +88,11 @@ const BookPage = () => {
       key: "categories",
       title: "Danh mục",
       dataIndex: "Categories",
-      // render: (_, book) => (
-      //   <Space>
-      //     {book.Categories && book.Categories.length > 0 ? (
-      //       book.Categories.map((val, index) => <Tag key={index}>{val}</Tag>)
-      //     ) : (
-      //       <Tag color="default">Không có danh mục</Tag>
-      //     )}
-      //   </Space>
-
-      // ),
+    },
+    {
+      key: "rank",
+      title: "Độ tuổi",
+      render: (_, book, __) => renderRank(book),
     },
     {
       title: "Thao tác",
@@ -115,7 +121,7 @@ const BookPage = () => {
     try {
       setState((prev) => ({
         ...prev,
-        isLoading: false,
+        isLoading: true,
       }));
 
       const res: AxiosResponse<ResponseDTO<any>> = await handleAPI(
@@ -123,10 +129,10 @@ const BookPage = () => {
       );
       setState((prev) => ({
         ...prev,
-        data: res.data.data.map((data: any) => ({
-          ...data,
-          status: data.status.data,
-        })),
+        data: res.data.data,
+        pageNum: res.data.page!,
+        pageSize: res.data.pageSize!,
+        total: res.data.total!,
       }));
     } catch (error: any) {
       message.error(error.message);
@@ -139,29 +145,60 @@ const BookPage = () => {
     }
   };
 
-  const onAddButtonClick = () => {
-    navigate("add-book");
+  const renderStatus = (book: Book) => {
+    switch (book.status) {
+      case 1:
+        return <Typography.Text>Tất cả</Typography.Text>;
+      case 2:
+        return <Typography.Text>Chỉ mua</Typography.Text>;
+      case 3:
+        return <Typography.Text>Chỉ thành viên</Typography.Text>;
+      default:
+        return <Typography.Text>Tất cả</Typography.Text>;
+    }
   };
 
-  return (
-    <>
-      <Card
-        loading={state.isLoading}
-        title={"Sách"}
-        extra={
-          <Button onClick={onAddButtonClick} type="primary">
-            Thêm
-          </Button>
-        }
-      >
-        <Table
-          bordered
-          columns={tableColums}
-          dataSource={state.data}
-          rowKey={(row) => row.BookID}
-        />
-      </Card>
-    </>
+  const renderRank = (book: Book) => {
+    switch (book.rank) {
+      case 1:
+        return <Typography.Text>Tất cả</Typography.Text>;
+      case 2:
+        return <Typography.Text>Trên 6 tuổi</Typography.Text>;
+      case 3:
+        return <Typography.Text>Trên 11 tuổi</Typography.Text>;
+      case 4:
+        return <Typography.Text>Trên 18 tuổi</Typography.Text>;
+      default:
+        return <Typography.Text>Tất cả</Typography.Text>;
+    }
+  };
+
+  return state.isLoading ? (
+    <Spin />
+  ) : (
+    <Card
+      title={"Sách"}
+      extra={
+        <Button onClick={() => navigate("add-book")} type="primary">
+          Thêm
+        </Button>
+      }
+    >
+      <Table
+        bordered
+        scroll={{
+          x: true,
+        }}
+        columns={tableColums}
+        dataSource={state.data}
+        rowKey={(row) => row.BookID}
+        pagination={{
+          total: state.total,
+          pageSize: state.pageSize,
+          current: state.pageNum,
+        }}
+      />
+    </Card>
   );
 };
 
