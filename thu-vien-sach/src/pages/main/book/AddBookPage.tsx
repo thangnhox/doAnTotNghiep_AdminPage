@@ -23,6 +23,7 @@ import { BookStatus } from "../../../models/book/BookEnum";
 import Category from "../../../models/Category";
 import Publisher from "../../../models/Publisher";
 import { handleAPI } from "../../../remotes/apiHandle";
+import { debounceSearch } from "../../../utils/debouce";
 
 interface PageState {
   isLoading: boolean;
@@ -123,8 +124,6 @@ const AddBookPage = () => {
         isRecommended: isRecommended ? 1 : 0,
         rank: rank,
       };
-
-      console.log(newBook);
 
       const res = await handleAPI(`books/add`, newBook, "post");
       console.log(res);
@@ -285,7 +284,7 @@ const AddBookPage = () => {
                 defaultActiveFirstOption={false}
                 notFoundContent={"Không tìm thấy"}
                 optionFilterProp="label"
-                onSearch={handleSearchCategory}
+                onSearch={debounceSearch(handleSearchCategory, 1000)}
                 onChange={setSelectedCategoryIds}
                 options={(state.categories || []).map((categories) => ({
                   value: categories.id,
@@ -303,7 +302,7 @@ const AddBookPage = () => {
                 defaultActiveFirstOption={false}
                 notFoundContent={"Không tìm thấy"}
                 optionFilterProp="label"
-                onSearch={handleSearchPublisher}
+                onSearch={debounceSearch(handleSearchPublisher, 1000)}
                 onChange={setSelectedPublisherId}
                 options={(state.publishers || []).map((publisher) => ({
                   value: publisher.id,
@@ -318,7 +317,7 @@ const AddBookPage = () => {
                 defaultActiveFirstOption={false}
                 notFoundContent={"Không tìm thấy"}
                 optionFilterProp="label"
-                onSearch={handleSearchAuthor}
+                onSearch={debounceSearch(handleSearchAuthor, 1000)}
                 onChange={setSelectedAuthorId}
                 options={(state.authors || []).map((author) => ({
                   value: author.id,
