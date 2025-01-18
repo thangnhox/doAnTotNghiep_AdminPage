@@ -374,7 +374,10 @@ const AddBookPage = () => {
             <Form.Item valuePropName="checked">
               <Checkbox
                 checked={isRecommended}
-                onChange={(val) => setRecommend(val.target.checked)}
+                onChange={(val) => {
+                  console.log(val)
+                  setRecommend(val.target.checked)
+                }}
               >
                 Đề cử
               </Checkbox>

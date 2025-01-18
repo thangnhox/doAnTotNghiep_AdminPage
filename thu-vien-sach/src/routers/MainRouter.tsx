@@ -16,6 +16,7 @@ import MembershipPage from "../pages/main/membership/MembershipPage";
 import OrderPage from "../pages/main/order/OrderPage";
 import PublisherDetail from "../pages/main/publisher/PublisherDetail";
 import PublisherPage from "../pages/main/publisher/PublisherPage";
+import BookRequestedPage from "../pages/main/BookRequested/BookRequestedPage";
 
 const MainRouter = () => {
   return (
@@ -32,6 +33,7 @@ const MainRouter = () => {
                 <Route path="/books/add-book" element={<AddBookPage />} />
                 <Route path="/books/detail/:id" element={<BookDetail />} />
                 <Route path="/books/detail/:id/read" element={<BookReader />} />
+                <Route path="/requested-book" element={<BookRequestedPage />} />
                 <Route path="/authors" element={<AuthorPage />} />
                 <Route path="/publishers" element={<PublisherPage />} />
                 <Route path="/publishers/:id" element={<PublisherDetail />} />

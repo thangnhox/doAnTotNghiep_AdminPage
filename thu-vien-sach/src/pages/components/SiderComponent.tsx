@@ -3,6 +3,7 @@ import Sider from "antd/es/layout/Sider";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
 import { AiOutlineDashboard } from "react-icons/ai";
 import {
+  MdBook,
   MdLibraryBooks,
   MdOutlineDiscount,
   MdPerson,
@@ -85,6 +86,15 @@ const SiderComponent = () => {
         </Link>
       ),
       icon: <MdOutlineDiscount />,
+    },
+    {
+      key: "book-requested",
+      label: (
+        <Link className="nav-item" to={"/requested-book"}>
+          Đơn yêu cầu
+        </Link>
+      ),
+      icon: <MdBook />,
     },
     {
       key: "order",
