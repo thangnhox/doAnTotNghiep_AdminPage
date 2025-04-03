@@ -125,7 +125,7 @@ const BookPage = () => {
       }));
 
       const res: AxiosResponse<ResponseDTO<any>> = await handleAPI(
-        `books?field=Title&page=${state.pageNum}&pageSize=${state.pageSize}`
+        `books?field=Title&page=${state.pageNum}&pageSize=${state.pageSize}&showHidden=true`
       );
       setState((prev) => ({
         ...prev,
@@ -146,15 +146,16 @@ const BookPage = () => {
   };
 
   const renderStatus = (book: Book) => {
+    console.log(book.status);
     switch (book.status) {
-      case 1:
+      case 3:
         return <Typography.Text>Tất cả</Typography.Text>;
       case 2:
         return <Typography.Text>Chỉ mua</Typography.Text>;
-      case 3:
+      case 1:
         return <Typography.Text>Chỉ thành viên</Typography.Text>;
       default:
-        return <Typography.Text>Tất cả</Typography.Text>;
+        return <Typography.Text>Ẩn</Typography.Text>;
     }
   };
 
