@@ -6,6 +6,7 @@ import SiderComponent from "../pages/components/SiderComponent";
 import AuthorPage from "../pages/main/authors/AuthorPage";
 import AddBookPage from "../pages/main/book/AddBookPage";
 import BookDetail from "../pages/main/book/BookDetail";
+import EditBookPage from "../pages/main/book/EditBookPage";
 import BookPage from "../pages/main/book/BookPage";
 import BookReader from "../pages/main/book/BookReader";
 import CategoryDetail from "../pages/main/category/CategoryDetail";
@@ -32,6 +33,7 @@ const MainRouter = () => {
                 <Route path="/books" element={<BookPage />} />
                 <Route path="/books/add-book" element={<AddBookPage />} />
                 <Route path="/books/detail/:id" element={<BookDetail />} />
+                <Route path="/books/edit/:id" element={<EditBookPage />} />
                 <Route path="/books/detail/:id/read" element={<BookReader />} />
                 <Route path="/requested-book" element={<BookRequestedPage />} />
                 <Route path="/authors" element={<AuthorPage />} />
