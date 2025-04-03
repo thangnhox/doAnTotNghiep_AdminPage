@@ -142,6 +142,7 @@ const BookDetail = () => {
                       shape="circle"
                       icon={<EditOutlined />}
                       size="large"
+                      onClick={() => navigate(`/books/edit/${book?.BookID}`)}
                     />
                   </Tooltip>
 
@@ -150,6 +151,21 @@ const BookDetail = () => {
                       shape="circle"
                       icon={<EyeInvisibleOutlined />}
                       size="large"
+                      type={book?.status === 0 ? "primary" : "default"}
+                      onClick={async () => {
+                        try {
+                          console.log("hide button clicked");
+                          await handleAPI(`/books/hide/${book?.BookID}`);
+                          setBook((prevBook) =>
+                            prevBook
+                              ? { ...prevBook, status: prevBook.status === 0 ? 3 : 0 }
+                              : prevBook
+                          );
+                          console.log(book?.status);
+                        } catch (error) {
+                          console.error(error);
+                        }
+                      }}
                     />
                   </Tooltip>
                 </div>
