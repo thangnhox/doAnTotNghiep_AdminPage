@@ -1,4 +1,8 @@
 export const BookStatus = {
+  HIDE: {
+    lable: "Ẩn",
+    value: 0,
+  },
   BUY_ONLY: {
     lable: "Chỉ mua",
     value: 1,

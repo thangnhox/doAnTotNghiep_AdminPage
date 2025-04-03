@@ -73,16 +73,7 @@ const AddBookPage = () => {
         message.error("Chưa có hình ảnh");
         return;
       }
-      const pdfRef = ref(fireStorage, `pdfs/${fileUpload.name}`);
-      const imageRef = ref(fireStorage, `images/${imageUpload.name}`);
 
-      const uploadFileReponse = await uploadBytes(pdfRef, fileUpload);
-      const urlPDFLink: string = await getDownloadURL(uploadFileReponse.ref);
-
-      const uploadImageResponse = await uploadBytes(imageRef, imageUpload);
-      const urlImageLink: string = await getDownloadURL(
-        uploadImageResponse.ref
-      );
       const title: string = addBookForm.getFieldValue("title");
       const description: string = addBookForm.getFieldValue("description");
       const publishDateObj: string = addBookForm.getFieldValue("publishDate");
@@ -114,8 +105,6 @@ const AddBookPage = () => {
         description,
         pageCount,
         price,
-        fileUrl: urlPDFLink,
-        coverUrl: urlImageLink,
         status: bookStatus,
         authorsId: selectedAuthorId,
         publisherId: selectedPublisherId,
@@ -329,6 +318,10 @@ const AddBookPage = () => {
               <Select
                 onChange={(val, _) => setBookStatus(val)}
                 options={[
+                  {
+                    label: BookStatus.HIDE.lable,
+                    value: BookStatus.HIDE.value,
+                  },
                   {
                     label: BookStatus.ALL.lable,
                     value: BookStatus.ALL.value,
